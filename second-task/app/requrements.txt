@@ -1,4 +1,0 @@
-google-api-python-client
-google-cloud-videointelligence
-SpeechRecognition
-pydub
