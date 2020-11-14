@@ -6,8 +6,9 @@ from flask import Blueprint, send_file
 from flask_restplus import Resource, Api, reqparse
 from werkzeug.datastructures import FileStorage
 
+from service.celery_tasks.celery_task import process_speech_to_text
 from service.storage_manager import CREATE_DATETIME, LAST_UPDATE, JOB_STATUS, Storage, \
-    load_history, update_history, JobStatus, check_job_exists
+    load_history, update_history, JobStatus, check_job_exists, update_status
 
 api_blueprint = Blueprint('api', __name__, url_prefix='/api')
 api = Api(
@@ -66,10 +67,11 @@ class Files(Resource):
 
         args = upload_parser.parse_args()
         file = args['file']
-        file.save(os.path.join(Storage.get_input_path(job_id), file.filename))
+        file_name = 'input.mp3' if '.mp3' in file.filename else 'input.mp4'
+        file.save(os.path.join(Storage.get_input_path(job_id), file_name))
         update_history(job_id, job)
-
-        # TODO: call celery task to process ai model
+        process_speech_to_text.delay(job_id)
+        update_status(job_id, JobStatus.in_progress)
 
         return job_id, 201
 
