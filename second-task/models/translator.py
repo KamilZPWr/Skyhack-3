@@ -13,7 +13,7 @@ def translate(text):
 
 
 def translate_list_of_chunks(chunks: list) -> list:
-    ''' Accepts list of tuples like [(int, string), ...]'''
+    """ Accepts list of tuples like [(int, string), ...]"""
     result_list = []
     for chunk in chunks:
         translated = translate(chunk[1])
