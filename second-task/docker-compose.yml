@@ -1,0 +1,49 @@
+version: "3"
+services:
+    redis:
+      image: redis:latest
+      ports:
+        - "6379:6379"
+      expose:
+        - 6379
+
+    web:
+      image: jakos
+      build: .
+      ports:
+        - "5000:5000"
+      depends_on:
+        - redis
+      volumes:
+        - storage:/service/storage
+      environment:
+        - STORAGE_PATH=${STORAGE_PATH}
+        - JOBS_FILE_LOCK_TIMEOUT=${JOBS_FILE_LOCK_TIMEOUT}
+
+    worker:
+      image: jakos
+      command: celery -A run_app.celery worker --loglevel=INFO
+      volumes:
+        - storage:/service/storage
+      links:
+        - redis
+        - web
+      environment:
+        - STORAGE_PATH=${STORAGE_PATH}
+        - JOBS_FILE_LOCK_TIMEOUT=${JOBS_FILE_LOCK_TIMEOUT}
+
+    beat:
+      image: jakos
+      command: celery -A run_app.celery beat --loglevel=INFO
+      volumes:
+        - ./model/:/service/model
+        - storage:/service/storage
+      links:
+        - redis
+        - web
+      environment:
+        - STORAGE_PATH=${STORAGE_PATH}
+        - JOBS_FILE_LOCK_TIMEOUT=${JOBS_FILE_LOCK_TIMEOUT}
+
+volumes:
+  storage:
