@@ -2,12 +2,10 @@ import io
 
 import pandas as pd
 from google.cloud import videointelligence
-from google.oauth2 import service_account
 
 
-def process(video_path: str) -> pd.DataFrame:
-    my_credentials = service_account.Credentials.from_service_account_file('apikey.json')
-    video_client = videointelligence.VideoIntelligenceServiceClient(credentials=my_credentials)
+def process(video_path: str, credentials) -> pd.DataFrame:
+    video_client = videointelligence.VideoIntelligenceServiceClient(credentials=credentials)
     features = [videointelligence.enums.Feature.LABEL_DETECTION]
 
     with io.open(video_path, "rb") as movie:

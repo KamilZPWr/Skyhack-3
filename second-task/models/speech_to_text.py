@@ -10,7 +10,7 @@ def divide_chunks(sound, chunk_size):
         yield sound[i:i + chunk_size]
 
 
-def process(file_path: str, chunk_size: int = 5000) -> List[Tuple[int, str]]:
+def process(file_path: str, chunk_size: int = 5000, apikey=None) -> List[Tuple[int, str]]:
 
     sound = AudioSegment.from_mp3(file_path)
     chunks = list(divide_chunks(sound, chunk_size))
@@ -24,13 +24,10 @@ def process(file_path: str, chunk_size: int = 5000) -> List[Tuple[int, str]]:
 
         with sr.AudioFile(wav_file_path) as source:
             audio = r.record(source)
-        try:
-            with open("apikey.json", ) as f:
-                apikey = json.load(f)
-                apikey = json.dumps(apikey)
+        if apikey:
             s = r.recognize_google_cloud(audio, language="pl-PL", credentials_json=apikey)
             results.append((index*5, s))
-        except:
+        else:
             s = r.recognize_google(audio, language="pl-PL")
             results.append((index*5, s))
 
