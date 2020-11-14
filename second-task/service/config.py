@@ -5,15 +5,6 @@ class BaseConfig:
     TESTING = False
     CSRF_ENABLED = True
 
-    CLEANER_INTERVAL = int(os.environ.get('CLEANER_INTERVAL', 86400))
-    # CELERY_IMPORTS = ()     # TODO: add celery task here
-    # CELERYBEAT_SCHEDULE = {
-    #     'cleaner_task': {
-    #         'task': 'clear_data',
-    #         'schedule': timedelta(seconds=CLEANER_INTERVAL)
-    #     },
-    # }
-
 
 class TestingConfig(BaseConfig):
     TESTING = True

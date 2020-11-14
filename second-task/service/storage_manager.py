@@ -30,6 +30,10 @@ class Storage:
         return os.path.join('..', Storage.get_job_root(job_id), 'results.pdf')
 
     @staticmethod
+    def get_input_mp3_path(job_id):
+        return os.path.join(Storage.get_job_root(job_id), 'input', 'input.mp3')
+
+    @staticmethod
     def get_input_path(job_id):
         return os.path.join(Storage.get_job_root(job_id), 'input')
 
@@ -67,3 +71,35 @@ def update_history(job_id, job, timeout=LOCK_TIMEOUT):
                 json.dump(history, file)
     finally:
         lock.release()
+
+
+def update_status(job_id: str, status: JobStatus, timeout: int = LOCK_TIMEOUT):
+    if status not in JobStatus:
+        raise ValueError('Unknown status value')
+
+    jobs_path = Storage.get_jobs_path()
+    if status == JobStatus.finished:
+        jobs_path = jobs_path.replace('../', './')
+
+    lock = FileLock(f'{jobs_path}.lock')
+    print(jobs_path)
+
+    try:
+        with lock.acquire(timeout=timeout):
+            with open(jobs_path, 'r') as file:
+                history = json.load(file)
+
+            job = history[job_id]
+            status_step = status.value - JobStatus[job[JOB_STATUS]].value
+            if status_step != 1:
+                raise ValueError('Wrong status flow!')
+
+            job[JOB_STATUS] = status.name
+            history[job_id] = job
+
+            with open(jobs_path, 'w') as file:
+                history[job_id] = job
+                json.dump(history, file)
+    finally:
+        lock.release()
+    return True
