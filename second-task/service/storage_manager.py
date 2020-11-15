@@ -27,7 +27,7 @@ class Storage:
 
     @staticmethod
     def get_results_path(job_id):
-        return os.path.join('..', Storage.get_job_root(job_id), 'results.pdf')
+        return os.path.join(Storage.get_job_root(job_id), 'results.csv')
 
     @staticmethod
     def get_input_mp3_path(job_id):
