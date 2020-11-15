@@ -436,7 +436,11 @@ app.layout = html.Div(
     children=[build_banner(),
                   buid_stats_panel(),
 #build_charts_panel(),
-
+dcc.Interval(
+                      id='updater',
+                      interval=1000,
+                      n_intervals=0
+                  )
               ])
 
 
@@ -462,14 +466,14 @@ def update_digital(value):
       [dash.dependencies.Input("metric-select-dropdown", "value")]
  )
 def update_digital2(value):
-     return int(p[p.results_path==value]["run_type"]=="video")
+     return int(p[p.results_path==value]["run_type"].values[0]=="video")
 
 @app.callback(
      dash.dependencies.Output('digital2', 'value'),
      [dash.dependencies.Input("metric-select-dropdown", "value")]
  )
 def update_digital3(value):
-     return int(p[p.results_path==value]["run_type"]=="audio")
+     return int(p[p.results_path==value]["run_type"].values[0]=="audio")
 
 @app.callback(
      dash.dependencies.Output("app-content", "children"),
@@ -488,7 +492,18 @@ def update_piechart(value):
 
     return plot_piechart(value)
 
+@app.callback(
+     output=dash.dependencies.Output("metric-select-dropdown", "options"),
+     inputs=[dash.dependencies.Input('updater', 'n_intervals')]
+ )
 
+def update(value):
+    p = pd.read_csv(os.path.join("data", "results_tracker.csv"))
+    lp = p["run_id"].to_list()
+    vp = p["results_path"].to_list()
+    options = list({"label": lp[i], "value": vp[i]} for i in range(len(lp)))
+
+    return options
 
 
 if __name__ == '__main__':
