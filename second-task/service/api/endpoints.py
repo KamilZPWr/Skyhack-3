@@ -2,13 +2,18 @@ import datetime
 import os
 import uuid
 
-from flask import Blueprint, send_file
+import pandas as pd
+from flask import Blueprint
 from flask_restplus import Resource, Api, reqparse
 from werkzeug.datastructures import FileStorage
 
-from service.celery_tasks.celery_task import process_speech_to_text
+from service.celery_tasks.celery_task import process_speech_to_text, process_video_to_labels
 from service.storage_manager import CREATE_DATETIME, LAST_UPDATE, JOB_STATUS, Storage, \
-    load_history, update_history, JobStatus, check_job_exists, update_status
+    update_history, JobStatus, update_status
+
+MP4 = 'mp4'
+
+MP3 = 'mp3'
 
 api_blueprint = Blueprint('api', __name__, url_prefix='/api')
 api = Api(
@@ -19,23 +24,6 @@ api = Api(
 )
 
 name_space = api.namespace('', description='More Powerful namespace')
-
-
-@name_space.route('/jobs/<string:job_id>')
-class Jobs(Resource):
-    @api.doc(
-        responses={200: 'Job found', 404: 'Job not found'},
-        description='Create new job'
-    )
-    def get(self, job_id):
-        history = load_history()
-
-        if not check_job_exists(history, job_id):
-            return 'Job not found', 404
-
-        return history[job_id]
-
-
 upload_parser = reqparse.RequestParser()
 upload_parser.add_argument(
     'file',
@@ -49,8 +37,9 @@ upload_parser.add_argument(
 @api.expect(upload_parser)
 class Files(Resource):
     @api.doc(
-        responses={201: 'File added'},
-        description='Add new document'
+        responses={201: 'Process started'},
+        description=('Upload mp3 or mp4 file to start labels detection, '
+                     'as result you will receive link to the dashboard which will present results')
     )
     def post(self):
         job_id = str(uuid.uuid1())
@@ -67,29 +56,27 @@ class Files(Resource):
 
         args = upload_parser.parse_args()
         file = args['file']
-        file_name = 'input.mp3' if '.mp3' in file.filename else 'input.mp4'
+        file_type = MP3 if '.mp3' in file.filename else MP4
+        file_name = f'input.{file_type}'
         file.save(os.path.join(Storage.get_input_path(job_id), file_name))
         update_history(job_id, job)
-        process_speech_to_text.delay(job_id)
+
+        if file_type == MP3:
+            process_speech_to_text.delay(job_id)
+        else:
+            process_video_to_labels.delay(job_id)
         update_status(job_id, JobStatus.in_progress)
 
+        results_tracker = pd.read_csv(Storage.get_tracker_path())
+        results_tracker = results_tracker.append(
+            {
+                'run_id': job_id,
+                'run_datetime': now,
+                'results_path': Storage.get_results_path(job_id),
+                'run_type': 'audio' if file_type == MP3 else 'video'
+            },
+            ignore_index=True
+        )
+        results_tracker.to_csv(Storage.get_tracker_path(), index=False)
+
         return job_id, 201
-
-
-@name_space.route('/jobs/download/<string:job_id>')
-class Results(Resource):
-    @api.doc(
-        responses={
-            200: 'Job found',
-            404: 'Job not found'
-        },
-        description='Download results'
-    )
-    def get(self, job_id):
-        history = load_history()
-
-        if not check_job_exists(history, job_id):
-            return 'Job not found', 404
-
-        results_path = Storage.get_results_path(job_id)
-        return send_file(results_path, as_attachment=True)

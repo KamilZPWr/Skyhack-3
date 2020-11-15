@@ -34,6 +34,18 @@ class Storage:
         return os.path.join(Storage.get_job_root(job_id), 'input', 'input.mp3')
 
     @staticmethod
+    def get_input_mp4_path(job_id):
+        return os.path.join(Storage.get_job_root(job_id), 'input', 'input.mp4')
+
+    @staticmethod
+    def get_tracker_path():
+        return os.path.join('results_tracker.csv')
+
+    @staticmethod
+    def get_apikey_path():
+        return os.path.join('apikey.json')
+
+    @staticmethod
     def get_input_path(job_id):
         return os.path.join(Storage.get_job_root(job_id), 'input')
 

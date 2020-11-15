@@ -16,15 +16,17 @@ COPY ./run.sh /service
 COPY requirements.txt /service
 COPY run_app.py /service
 COPY setup.py /service
+COPY apikey.json /service
 
 RUN mkdir -p storage
 
 RUN touch storage/jobs.json
 RUN echo {} > storage/jobs.json
+COPY results_tracker.csv .
 
 RUN pip install --upgrade pip
 RUN pip install --no-cache-dir -r requirements.txt
-
+RUN python -m spacy download en_core_web_sm
 
 EXPOSE 5000
 
