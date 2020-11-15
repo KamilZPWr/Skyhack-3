@@ -45,5 +45,14 @@ services:
         - STORAGE_PATH=${STORAGE_PATH}
         - JOBS_FILE_LOCK_TIMEOUT=${JOBS_FILE_LOCK_TIMEOUT}
 
+    nginx:
+      image: nginx:alpine
+      container_name: nginx
+      restart: unless-stopped
+      volumes:
+        - ./nginx.conf:/etc/nginx/nginx.conf
+      ports:
+        - "80:80"
+
 volumes:
   storage:
