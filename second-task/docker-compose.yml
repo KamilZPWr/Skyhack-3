@@ -9,7 +9,7 @@ services:
 
     web:
       image: jakos
-      build: .
+      build: Dockerfile
       ports:
         - "5000:5000"
       depends_on:
@@ -44,6 +44,14 @@ services:
       environment:
         - STORAGE_PATH=${STORAGE_PATH}
         - JOBS_FILE_LOCK_TIMEOUT=${JOBS_FILE_LOCK_TIMEOUT}
+
+    dashboard:
+      image: moje
+      build: Dockerfile.dashboard
+      ports:
+        - "8050:8050"
+      volumes:
+        - storage:/service/storage
 
 volumes:
   storage:

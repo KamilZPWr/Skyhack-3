@@ -19,6 +19,7 @@ p = pd.read_csv(os.path.join("data", "results_tracker.csv"))
 lp = p["run_id"].to_list()
 vp = p["results_path"].to_list()
 state_dict = pd.DataFrame()
+
 app = dash.Dash(__name__)
 
 
@@ -507,4 +508,4 @@ def update(value):
 
 
 if __name__ == '__main__':
-    app.run_server(debug=True,port=2020)
+    app.run_server(debug=True,port=8050)
