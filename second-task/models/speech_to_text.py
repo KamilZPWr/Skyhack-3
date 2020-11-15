@@ -33,13 +33,17 @@ def process(file_path: str, chunk_size: int = 60000, apikey=None) -> List[Tuple[
                 word_counter += 1
         else:
             s = r.recognize_google(audio, language="pl-PL")
-            results.append((index*5, s))
+            words_per_second = len(s.split()) / 60
+            word_counter = 1
+            for word in s.split():
+                results.append((int((index * 60) + word_counter / words_per_second), word))
+                word_counter += 1
 
     return results
 
 
 def main():
-    for filename in ['/Users/ag283qj/code/Skyhack-3/second-task/storage/Jesteśmy zgubieni.mp3']:
+    for filename in ['712270.mp3']:
         results = process(filename)
         text = ' '.join([text for _, text in results])
         print(f'File path: {filename}')
