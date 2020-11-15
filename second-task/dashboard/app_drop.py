@@ -440,7 +440,8 @@ app.layout = html.Div(
 dcc.Interval(
                       id='updater',
                       interval=1000,
-                      n_intervals=0
+                      n_intervals=0,
+max_intervals=-1
                   )
               ])
 
@@ -467,14 +468,20 @@ def update_digital(value,i):
       [dash.dependencies.Input("metric-select-dropdown", "value"),dash.dependencies.Input('updater', 'n_intervals')]
  )
 def update_digital2(value,i):
-     return int(p[p.results_path==value]["run_type"].values[0]=="video")
+    p = pd.read_csv(os.path.join("data", "results_tracker.csv"))
+    lp = p["run_id"].to_list()
+    vp = p["results_path"].to_list()
+    return int(p[p.results_path==value]["run_type"].values[0]=="video")
 
 @app.callback(
      dash.dependencies.Output('digital2', 'value'),
      [dash.dependencies.Input("metric-select-dropdown", "value"),dash.dependencies.Input('updater', 'n_intervals')]
  )
 def update_digital3(value,i):
-     return int(p[p.results_path==value]["run_type"].values[0]=="audio")
+    p = pd.read_csv(os.path.join("data", "results_tracker.csv"))
+    lp = p["run_id"].to_list()
+    vp = p["results_path"].to_list()
+    return int(p[p.results_path==value]["run_type"].values[0]=="audio")
 
 @app.callback(
      dash.dependencies.Output("app-content", "children"),
