@@ -451,9 +451,9 @@ dcc.Interval(
 
 @app.callback(
     dash.dependencies.Output('digital', 'value'),
-    [dash.dependencies.Input("metric-select-dropdown", "value")]
+    [dash.dependencies.Input("metric-select-dropdown", "value"),dash.dependencies.Input('updater', 'n_intervals')]
 )
-def update_digital(value):
+def update_digital(value,i):
     state_dict = init_df(value)
     max_length = max(state_dict["second"]["data"])+1
     m, s = divmod(max_length, 60)
@@ -463,32 +463,32 @@ def update_digital(value):
 
 @app.callback(
      dash.dependencies.Output('digital1', 'value'),
-      [dash.dependencies.Input("metric-select-dropdown", "value")]
+      [dash.dependencies.Input("metric-select-dropdown", "value"),dash.dependencies.Input('updater', 'n_intervals')]
  )
-def update_digital2(value):
+def update_digital2(value,i):
      return int(p[p.results_path==value]["run_type"].values[0]=="video")
 
 @app.callback(
      dash.dependencies.Output('digital2', 'value'),
-     [dash.dependencies.Input("metric-select-dropdown", "value")]
+     [dash.dependencies.Input("metric-select-dropdown", "value"),dash.dependencies.Input('updater', 'n_intervals')]
  )
-def update_digital3(value):
+def update_digital3(value,i):
      return int(p[p.results_path==value]["run_type"].values[0]=="audio")
 
 @app.callback(
      dash.dependencies.Output("app-content", "children"),
-     [dash.dependencies.Input("metric-select-dropdown", "value")]
+     [dash.dependencies.Input("metric-select-dropdown", "value"),dash.dependencies.Input('updater', 'n_intervals')]
  )
-def render_tab_content(value):
+def render_tab_content(value,i):
      return build_charts_panel(value)
 
 
 @app.callback(
      output=dash.dependencies.Output("piechart", "figure"),
-     inputs=[dash.dependencies.Input("metric-select-dropdown", "value")]
+     inputs=[dash.dependencies.Input("metric-select-dropdown", "value"),dash.dependencies.Input('updater', 'n_intervals')]
  )
 
-def update_piechart(value):
+def update_piechart(value,i):
 
     return plot_piechart(value)
 
