@@ -35,7 +35,6 @@ def process(file_path: str, chunk_size: int = 60000, apikey=None) -> Tuple[List[
             for word in s.split():
                 results.append((int((index * 60) + word_counter / words_per_second), word))
                 word_counter += 1
-            print(index)
         else:
             s = r.recognize_google(audio, language="pl-PL")
             results.append((index*5, s))
