@@ -22,3 +22,10 @@ werkzeug==0.16.1
 google-api-python-client==1.12.5
 SpeechRecognition==3.8.1
 pydub==0.24.1
+google-cloud-videointelligence==1.16.0
+spacy==2.3.2
+moviepy==1.0.3
+opencv-python==4.4.0.46
+pandas==1.1.4
+grpcio
+grpcio-tools

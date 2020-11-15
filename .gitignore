@@ -392,3 +392,6 @@ $RECYCLE.BIN/
 *.lnk
 
 # End of https://www.toptal.com/developers/gitignore/api/python,macos,windows,linux,jupyternotebooks,pycharm,flask
+first-task/data/
+first-task/data2/
+first-task/models/
