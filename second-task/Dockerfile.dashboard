@@ -1,15 +1,19 @@
 FROM python:3.6
 
 USER root
-
+COPY . .
 WORKDIR /service
 
 ADD . /service
-RUN mkdir -p storage
-RUN pip install --trusted-host pypi.python.org -r requirements.txt
+# RUN mkdir -p storage
+
+
+RUN pip install --trusted-host pypi.python.org -r dashboard/requirements.txt
+
+
 
 EXPOSE 8050
 
 ENV NAME World
 
-CMD ["python", "app_drop.py"]
+CMD ["python", "dashboard/app_drop.py"]

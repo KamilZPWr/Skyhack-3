@@ -9,7 +9,7 @@ services:
 
     web:
       image: jakos
-      build: Dockerfile
+      build: .
       ports:
         - "5000:5000"
       depends_on:
@@ -47,7 +47,9 @@ services:
 
     dashboard:
       image: moje
-      build: Dockerfile.dashboard
+      build:
+        context: .
+        dockerfile: Dockerfile.dashboard
       ports:
         - "8050:8050"
       volumes:

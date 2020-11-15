@@ -1,3 +1,4 @@
+import logging
 import os
 import numpy as np
 import dash
@@ -8,14 +9,15 @@ import dash_core_components as dcc
 from datetime import datetime
 import plotly.graph_objs as go
 import plotly
-
+logging.warning('#'*100)
+logging.warning(os.path.dirname(os.path.realpath(__file__)))
 suffix_row = "_row"
 suffix_button_id = "_button"
 suffix_sparkline_graph = "_sparkline_graph"
 suffix_count = "_count"
 suffix_ooc_n = "_OOC_number"
 suffix_ooc_g = "_OOC_graph"
-p = pd.read_csv(os.path.join("data", "results_tracker.csv"))
+p = pd.read_csv("../results_tracker.csv")
 lp = p["run_id"].to_list()
 vp = p["results_path"].to_list()
 state_dict = pd.DataFrame()
@@ -26,9 +28,9 @@ app = dash.Dash(__name__)
 #### INIT DATA #####
 def read_csv(file_path=None):
     if file_path is None:
-        file_path = os.path.join("generated_files", "data.csv")
+        file_path = os.path.join("../storage/generated_files", "data.csv")
     else:
-        file_path = os.path.join("generated_files", file_path)
+        file_path = os.path.join("../storage/generated_files", file_path)
     df = pd.read_csv(file_path)
 
     return df.loc[:, (df != 0).any(axis=0)]
