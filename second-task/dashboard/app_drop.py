@@ -25,7 +25,7 @@ app = dash.Dash(__name__)
 #### INIT DATA #####
 def read_csv(file_path=None):
     if file_path is None:
-        file_path = os.path.join("data", "data.csv")
+        file_path = os.path.join("generated_files", "data.csv")
     else:
         file_path = os.path.join("generated_files", file_path)
     df = pd.read_csv(file_path)
